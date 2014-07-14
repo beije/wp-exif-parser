@@ -20,8 +20,6 @@ class BHExifSaver {
 	 * @return void.
 	 */
 	public function fetchExifOnUpload($data, $postId) {
-		error_log(json_encode($data));
-		return;
 		if(!BHExifParser::hasSupport()) {
 			return;
 		}
