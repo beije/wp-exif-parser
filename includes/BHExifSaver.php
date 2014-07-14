@@ -2,10 +2,20 @@
 class BHExifSaver {
 	private $domain = 'bh_exif_';
 
+	/**
+	 * Constructor.
+	 *
+	 * @return void.
+	 */
 	public function __construct() {
 		$this->setupFilters();
 	}
 
+	/**
+	 * Setup filters.
+	 *
+	 * @return void.
+	 */
 	private function setupFilters() {
 		add_filter( 'attachment_fields_to_edit', array($this, 'registerExifAttachmentFields'), 10, 2 );
 		add_filter( 'attachment_fields_to_save', array($this, 'saveExifAttachmentFields'), 10, 2 );
