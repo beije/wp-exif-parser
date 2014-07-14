@@ -46,8 +46,35 @@ class BHExifSaver {
 		$exifData = $exifImage->getExif();
 
 		foreach($exifData as $exifkKey => $exifFieldData) {
-			update_post_meta( $postId, $this->domain . $exifkKey, $exifFieldData);
+			update_post_meta($postId, $this->domain . $exifkKey, $exifFieldData);
 		}
+
+		$attachment = array(
+			'ID' => $postId,
+			'post_content' => $this->generateDescription($exifData)
+		);
+
+		wp_update_post($attachment);
+	}
+
+	public function generateDescription($exifData){
+		$description = '';
+		if(isset($exifData['Model']) && !empty($exifData['Model'])) {
+			$description .= $exifData['Model'];
+		}
+		if(isset($exifData['ExposureTime']) && !empty($exifData['ExposureTime']) && isset($exifData['FNumber']) && !empty($exifData['FNumber'])) {
+			$description .= ', '. $exifData['ExposureTime'] . ' @ ' . 'f/' . $exifData['FNumber'];
+		}
+		if(isset($exifData['ISOSpeedRatings']) && !empty($exifData['ISOSpeedRatings'])) {
+			$description .= ' (ISO: ' . $exifData['ISOSpeedRatings'] . ')';
+		}
+		if(isset($exifData['Artist']) && !empty($exifData['Artist'])) {
+			$description .= ' by ' . $exifData['Artist'];
+		} else if(isset($exifData['Copyright']) && !empty($exifData['Copyright'])) {
+			$description .= ' Copyright ' . $exifData['Copyright'];
+		}
+
+		return trim($description);
 	}
 
 	/**
