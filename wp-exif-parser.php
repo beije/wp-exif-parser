@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Image exif parser.
+Plugin Name: Image EXIF parser.
 Plugin URI: http://www.benjaminhorn.se
-Description: Parses the exif data from images.
+Description: Parses the EXIF data from images.
 Version: 0.0.0
 Author: Benjamin Horn
 Author URI: http://www.benjaminhorn.se
