@@ -1,5 +1,9 @@
 <?php
 class BHExifParser {
+	/**
+	 * Fields to fetch from EXIF data.
+	 * @var array
+	 */
 	public static $fieldNames = array(
 		'Model' => [
 			'friendly' => 'Model',
@@ -35,10 +39,23 @@ class BHExifParser {
 		]
 	);
 
+	/**
+	 * EXIF values after parsing.
+	 * @var Array
+	 */
 	private $values;
-	private $filePath;
-	private $exif;
 
+	/**
+	 * File path.
+	 * @var String
+	 */
+	private $filePath;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param String $filePath Path to image file.
+	 */
 	public function __construct($filePath) {
 
 		foreach(self::$fieldNames as $key => $value) {
@@ -48,6 +65,10 @@ class BHExifParser {
 		$this->setFilePath($filePath);
 	}
 
+	/**
+	 * Checks if server has support for exif parsing.
+	 * @return boolean
+	 */
 	public static function hasSupport() {
 		if(!function_exists('exif_read_data')) {	
 			return false;
@@ -56,6 +77,10 @@ class BHExifParser {
 		return true;
 	}
 
+	/**
+	 * Sets the filepath to the image.
+	 * @param String $filePath The filepath.
+	 */
 	public function setFilePath($filePath) {
 		if(file_exists($filePath)) {
 			$this->filePath = $filePath;
@@ -63,6 +88,10 @@ class BHExifParser {
 		}
 	}
 
+	/**
+	 * Parses the image for EXIF data.
+	 * @return void.
+	 */
 	private function parseImageExif() {
 		$exif = exif_read_data($this->filePath);
 
@@ -80,10 +109,22 @@ class BHExifParser {
 			}
 		}
 	}
+
+	/**
+	 * Reformats date.
+	 * @param  String $date The date from the EXIF data.
+	 * @return String       Reformatted date.
+	 */
 	private function handleDate($date) {
 		$date = date_create($date);
 		return date_format($date, 'Y-m-d H:i:s');
 	}
+
+	/**
+	 * Handles dividble numbers (like f-stop and focal length).
+	 * @param  String $number The dividble string.
+	 * @return Number         The new number post division.
+	 */
 	private function handleDividbleNumber($number) {
 		$fnumber = explode('/', $number);
 		if(!isset($fnumber[0]) || !isset($fnumber[1]) || intval($fnumber[1]) == 0) {
@@ -93,6 +134,10 @@ class BHExifParser {
 		return intval($fnumber[0]) / intval($fnumber[1]);
 	}
 
+	/**
+	 * Returns an array with all the values.
+	 * @return Array The values.
+	 */
 	public function getExif() {
 		return $this->values;
 	}
