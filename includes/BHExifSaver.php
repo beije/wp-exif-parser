@@ -73,8 +73,8 @@ class BHExifSaver {
 	 */
 	public function saveExifAttachmentFields($post, $attachment) {
 		foreach(BHExifParser::$fieldNames as $fieldName => $value) {
-			if(isset($attachment['exif_' . $fieldName])) {
-				update_post_meta( $post['ID'], 'exif_' . $fieldName, $attachment['exif_' . $fieldName] );
+			if(isset($attachment[$this->domain . $fieldName])) {
+				update_post_meta( $post['ID'], $this->domain . $fieldName, $attachment[$this->domain . $fieldName] );
 			}
 		}
 
