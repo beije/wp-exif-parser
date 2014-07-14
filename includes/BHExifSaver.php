@@ -30,6 +30,12 @@ class BHExifSaver {
 	 * @return void.
 	 */
 	public function fetchExifOnUpload($data, $postId) {
+		// Check if image.
+		if(!wp_attachment_is_image($postId)) {
+			return;
+		}
+
+		// Check support.
 		if(!BHExifParser::hasSupport()) {
 			return;
 		}
@@ -52,6 +58,11 @@ class BHExifSaver {
 	 * @return $form_fields, modified form fields
 	 */
 	public function registerExifAttachmentFields($form_fields, $post) {
+		// Check if image.
+		if(!wp_attachment_is_image($post->ID)) {
+			return $form_fields;
+		}
+
 		foreach(BHExifParser::$fieldNames as $fieldName => $value) {
 			$form_fields[$this->domain . $fieldName] = array(
 				'label' => $value['friendly'],
@@ -72,6 +83,11 @@ class BHExifSaver {
 	 * @return $post array, modified post data
 	 */
 	public function saveExifAttachmentFields($post, $attachment) {
+		// Check if image.
+		if(!wp_attachment_is_image($post['ID'])) {
+			return $post;
+		}
+
 		foreach(BHExifParser::$fieldNames as $fieldName => $value) {
 			if(isset($attachment[$this->domain . $fieldName])) {
 				update_post_meta( $post['ID'], $this->domain . $fieldName, $attachment[$this->domain . $fieldName] );
