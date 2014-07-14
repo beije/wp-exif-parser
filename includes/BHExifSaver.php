@@ -1,5 +1,7 @@
 <?php
-class ExifSaver {
+class BHExifSaver {
+	private $domain = 'bh_exif_';
+
 	public function __construct() {
 		$this->setupFilters();
 	}
@@ -18,13 +20,19 @@ class ExifSaver {
 	 * @return void.
 	 */
 	public function fetchExifOnUpload($data, $postId) {
+		error_log(json_encode($data));
+		return;
+		if(!BHExifParser::hasSupport()) {
+			return;
+		}
+
 		$uploadDir = wp_upload_dir();
 		$filePath = $uploadDir['basedir'] . DIRECTORY_SEPARATOR . $data['file'];
-		$exifImage = new Exif($filePath);
+		$exifImage = new BHExifParser($filePath);
 		$exifData = $exifImage->getExif();
 
 		foreach($exifData as $exifkKey => $exifFieldData) {
-			update_post_meta( $postId, 'exif_' . $exifkKey, $exifFieldData);
+			update_post_meta( $postId, $this->domain . $exifkKey, $exifFieldData);
 		}
 	}
 
@@ -36,12 +44,12 @@ class ExifSaver {
 	 * @return $form_fields, modified form fields
 	 */
 	public function registerExifAttachmentFields($form_fields, $post) {
-		foreach(Exif::$fieldNames as $fieldName) {
-			$form_fields['exif_' . $fieldName] = array(
-				'label' => $fieldName,
+		foreach(BHExifParser::$fieldNames as $fieldName => $value) {
+			$form_fields[$this->domain . $fieldName] = array(
+				'label' => $value['friendly'],
 				'input' => 'text',
-				'value' => get_post_meta( $post->ID, 'exif_' . $fieldName, true ),
-				'helps' => 'Exif data from image.',
+				'value' => get_post_meta( $post->ID, $this->domain . $fieldName, true ),
+				'helps' => $value['description'],
 			);
 		}
 
@@ -56,7 +64,7 @@ class ExifSaver {
 	 * @return $post array, modified post data
 	 */
 	public function saveExifAttachmentFields($post, $attachment) {
-		foreach(Exif::$fieldNames as $fieldName) {
+		foreach(BHExifParser::$fieldNames as $fieldName => $value) {
 			if(isset($attachment['exif_' . $fieldName])) {
 				update_post_meta( $post['ID'], 'exif_' . $fieldName, $attachment['exif_' . $fieldName] );
 			}

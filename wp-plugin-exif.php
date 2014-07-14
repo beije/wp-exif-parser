@@ -7,9 +7,9 @@ Version: 0.0.0
 Author: Benjamin Horn
 Author URI: http://www.benjaminhorn.se
 */
-include('includes/Exif.php');
-include('includes/ExifSaver.php');
+include('includes/BHExifParser.php');
+include('includes/BHExifSaver.php');
 
-new ExifSaver();
+new BHExifSaver();
 
 ?>
